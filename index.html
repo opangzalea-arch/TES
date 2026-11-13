@@ -230,7 +230,7 @@
       box-shadow: 0 0 10px rgba(217, 48, 37, 0.6);
     }
 
-    /* EFEK BEKAS COBLOSAN PAKU DI AREA DADA (75% DARI ATAS) - SEPERTI GAMBAR PERTAMA */
+    /* EFEK BEKAS COBLOSAN PAKU DI AREA DADA (75% DARI ATAS) */
     .candidate-card.selected::after {
       content: '';
       position: absolute;
@@ -273,22 +273,22 @@
       max-width: 100%;
     }
 
-    /* Animasi Gambar Tangan Menunjuk ke Bawah */
+    /* Animasi Gambar Tangan Menunjuk ke Bawah (Diperbesar) */
     .pointing-hand {
       position: absolute;
-      top: -38px;
+      top: -48px;
       left: 50%;
       transform: translateX(-50%) rotate(180deg);
-      font-size: 32px;
+      font-size: 52px;
       z-index: 50;
       animation: bounceHandDown 0.8s infinite alternate ease-in-out;
       display: none;
-      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+      filter: drop-shadow(0 3px 6px rgba(0,0,0,0.4));
     }
 
     @keyframes bounceHandDown {
       0% { transform: translateX(-50%) rotate(180deg) translateY(0); }
-      100% { transform: translateX(-50%) rotate(180deg) translateY(8px); }
+      100% { transform: translateX(-50%) rotate(180deg) translateY(10px); }
     }
 
     /* LAYAR KONFIRMASI */
