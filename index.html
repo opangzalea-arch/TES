@@ -223,25 +223,26 @@
       overflow: hidden;
     }
 
+    /* Frame Merah Saat Kandidat Dipilih */
     .candidate-card.selected {
-      border: 5px solid #28a745 !important;
-      background-color: #e8f8ec;
-      box-shadow: 0 0 10px rgba(40, 167, 69, 0.6);
+      border: 5px solid #d93025 !important;
+      background-color: #fce8e6;
+      box-shadow: 0 0 10px rgba(217, 48, 37, 0.6);
     }
 
-    /* EFEK BEKAS COBLOSAN PAKU DI AREA DADA (75% DARI ATAS) */
+    /* EFEK SOBEKAN / BEKAS PAKU */
     .candidate-card.selected::after {
       content: '';
       position: absolute;
-      top: 68%;
+      top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      width: 34px;
-      height: 34px;
-      background: radial-gradient(circle, #000000 30%, #3a220b 60%, transparent 80%);
-      border: 2px dashed #ff1100;
+      width: 50px;
+      height: 50px;
+      background: radial-gradient(circle, rgba(0,0,0,0.9) 20%, rgba(20,10,5,0.7) 50%, transparent 75%);
+      border: 3px dashed #d93025;
       border-radius: 50%;
-      box-shadow: 0 0 8px rgba(0, 0, 0, 0.8), inset 0 0 6px #000;
+      box-shadow: 0 0 12px rgba(0, 0, 0, 0.9), inset 0 0 8px #000;
       z-index: 20;
     }
 
@@ -264,11 +265,30 @@
       width: 100%;
       display: flex;
       justify-content: center;
+      position: relative;
     }
 
     #screen-vote .btn-blue {
       width: 100%;
       max-width: 100%;
+    }
+
+    /* Animasi Gambar Tangan Menunjuk ke Bawah */
+    .pointing-hand {
+      position: absolute;
+      top: -38px;
+      left: 50%;
+      transform: translateX(-50%) rotate(180deg);
+      font-size: 32px;
+      z-index: 50;
+      animation: bounceHandDown 0.8s infinite alternate ease-in-out;
+      display: none;
+      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+    }
+
+    @keyframes bounceHandDown {
+      0% { transform: translateX(-50%) rotate(180deg) translateY(0); }
+      100% { transform: translateX(-50%) rotate(180deg) translateY(8px); }
     }
 
     /* LAYAR KONFIRMASI */
@@ -329,7 +349,6 @@
       padding: 2px;
     }
 
-    /* MENGHILANGKAN EFEK COBLOSAN PAKU PADA LAYAR KONFIRMASI */
     #confirm-container .candidate-card::after {
       display: none !important;
     }
@@ -449,6 +468,7 @@
 
     <div class="action-bar">
       <button class="btn btn-blue" onclick="goToConfirm()">PILIH KANDIDAT INI</button>
+      <div id="hand-pointer" class="pointing-hand">👆</div>
     </div>
   </div>
 
@@ -503,7 +523,6 @@
     let video = document.getElementById("video-element");
     let canvasElement = document.createElement("canvas");
     
-    // Ukuran resolusi optimal yang sangat ringan dan responsif untuk tablet murah
     const WORK_SIZE = 400;
     canvasElement.width = WORK_SIZE;
     canvasElement.height = WORK_SIZE;
@@ -516,7 +535,6 @@
     let scanning = false;
     let nativeDetector = null;
 
-    // Cek dukungan Native BarcodeDetector (Hardware Accelerated di Android modern)
     if ("BarcodeDetector" in window) {
       try {
         nativeDetector = new BarcodeDetector({ formats: ["qr_code"] });
@@ -554,7 +572,6 @@
         video.play();
         status.innerText = "Siap memindai QR Code...";
         
-        // Memulai loop pemindaian kilat tanpa jeda buatan
         requestAnimationFrame(processScan);
       })
       .catch(function() {
@@ -589,7 +606,6 @@
         const vh = video.videoHeight;
 
         if (vw > 0 && vh > 0) {
-          // 1. Deteksi kilat menggunakan Hardware Bawaan Browser
           if (nativeDetector) {
             try {
               const barcodes = await nativeDetector.detect(video);
@@ -598,14 +614,13 @@
                 return;
               }
             } catch (e) {
-              nativeDetector = null; // Otomatis fallback ke jsQR jika gagal
+              nativeDetector = null;
             }
           }
 
-          // 2. Deteksi super sensitif dengan jsQR (Crop area tengah + penajaman kontras kilat)
           if (!nativeDetector && typeof jsQR !== "undefined") {
             const minSide = Math.min(vw, vh);
-            const cropSize = Math.floor(minSide * 0.75); // Area tangkap 75% di tengah (mudah terbaca walau sekilas)
+            const cropSize = Math.floor(minSide * 0.75);
             const sx = Math.floor((vw - cropSize) / 2);
             const sy = Math.floor((vh - cropSize) / 2);
 
@@ -614,13 +629,12 @@
             const imageData = canvas.getImageData(0, 0, WORK_SIZE, WORK_SIZE);
             const data = imageData.data;
 
-            // Algoritma penajaman kontras agar QR yang sedikit buram tetap terbaca sekilas
             for (let i = 0; i < data.length; i += 4) {
               let avg = (data[i] * 0.299 + data[i + 1] * 0.587 + data[i + 2] * 0.114);
               let val = avg < 110 ? 0 : (avg > 145 ? 255 : avg);
-              data[i] = val;     // R
-              data[i + 1] = val; // G
-              data[i + 2] = val; // B
+              data[i] = val;     
+              data[i + 1] = val; 
+              data[i + 2] = val; 
             }
 
             let code = jsQR(data, WORK_SIZE, WORK_SIZE, {
@@ -670,6 +684,13 @@
         selectedCandidates.add(id);
         card.classList.add('selected');
       }
+
+      const handPointer = document.getElementById("hand-pointer");
+      if (selectedCandidates.size > 0) {
+        handPointer.style.display = "block";
+      } else {
+        handPointer.style.display = "none";
+      }
     }
 
     function goToConfirm() {
@@ -677,6 +698,9 @@
         alert("Pilih setidaknya 1 kandidat terlebih dahulu!");
         return;
       }
+      
+      document.getElementById("hand-pointer").style.display = "none";
+
       const container = document.getElementById("confirm-container");
       container.innerHTML = "";
       
@@ -697,6 +721,7 @@
     function resetAndBack() {
       selectedCandidates.clear();
       document.querySelectorAll('#screen-vote .candidate-card').forEach(c => c.classList.remove('selected'));
+      document.getElementById("hand-pointer").style.display = "none";
       
       document.getElementById("main-header").style.display = "block";
       document.getElementById("screen-confirm").classList.remove("active");
@@ -742,6 +767,7 @@
       selectedCandidates.clear();
       currentActiveUser = "";
       document.querySelectorAll('.candidate-card').forEach(c => c.classList.remove('selected'));
+      document.getElementById("hand-pointer").style.display = "none";
       
       document.getElementById("screen-thanks").classList.remove("active");
       document.getElementById("main-header").style.display = "none";
