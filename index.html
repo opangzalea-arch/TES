@@ -398,7 +398,34 @@
     .btn-blue { background-color: #0052cc; }
     .btn-danger { background-color: #d93025; }
 
-    /* LAYAR SELESAI */
+    /* CUSTOM TOAST / ALERT POPUP POSISI AGAK KE ATAS (MENYIMPAN & BERHASIL DISIMPAN) */
+    #custom-toast-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background-color: rgba(0, 0, 0, 0.5);
+      z-index: 3000;
+      align-items: flex-start;
+      justify-content: center;
+      padding-top: 15vh;
+    }
+
+    .toast-box {
+      background: white;
+      padding: 18px 30px;
+      border-radius: 10px;
+      font-size: 16px;
+      font-weight: 800;
+      color: #333;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+      text-align: center;
+      border: 2px solid #0052cc;
+    }
+
+    /* LAYAR SELESAI (JIKA DIPERLUKAN CADANGAN) */
     .empty-msg {
       width: 100%;
       display: flex;
@@ -415,26 +442,6 @@
       padding: 24px 16px;
       margin-bottom: 12px;
       box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-    }
-
-    .empty-msg.warning-msg {
-      color: #721c24;
-      background-color: #f8d7da;
-      border-color: #f5c6cb;
-    }
-
-    .msg-details {
-      margin-top: 10px;
-      font-size: 14px;
-      font-weight: 600;
-      line-height: 1.5;
-    }
-
-    .candidate-name {
-      color: #0052cc;
-      font-weight: 900;
-      font-size: 16px;
-      text-transform: uppercase;
     }
   </style>
 </head>
@@ -506,15 +513,9 @@
     </div>
   </div>
 
-  <!-- LAYAR SELESAI -->
-  <div id="screen-thanks" class="screen">
-    <div id="thanks-msg-box" class="empty-msg">
-      <h2>TERIMA KASIH!</h2>
-      <div id="thanks-text" class="msg-details"></div>
-    </div>
-    <div class="action-bar">
-      <button class="btn btn-blue" style="max-width:100%; width:100%;" onclick="resetToScan()">KEMBALI KE LAYAR SCAN</button>
-    </div>
+  <!-- POPUP LOADING / STATUS (MENYIMPAN & BERHASIL DISIMPAN) -->
+  <div id="custom-toast-overlay">
+    <div id="toast-text" class="toast-box">Menyimpan suara...</div>
   </div>
 
   <script>
@@ -752,34 +753,26 @@
         usedQrCodes.add(currentActiveUser);
       }
 
-      const msgBox = document.getElementById("thanks-msg-box");
-      const textContainer = document.getElementById("thanks-text");
-
-      if (selectedCandidates.size === 1) {
-        const kandidatDipilih = Array.from(selectedCandidates)[0];
-        const teksKandidat = JSON.stringify(kandidatDipilih);
-
-        const isNomorTiga = 
-          kandidatDipilih === 3 || 
-          kandidatDipilih === "3" || 
-          teksKandidat.includes("1ZFbuqfIGlSHvM9naWr9AM60coAzwHpYC") || 
-          teksKandidat.includes("3") ||
-          teksKandidat.toLowerCase().includes("alwi");
-
-        if (isNomorTiga) {
-          msgBox.className = "empty-msg";
-          textContainer.innerHTML = `Pilihan yang tepat, Anda telah memilih <span class="candidate-name">HAJI ALWI JABARUDIN</span> calon pemimpin yang luar biasa demi kemajuan Desa Sumurgede.`;
-        } else {
-          msgBox.className = "empty-msg warning-msg";
-          textContainer.innerHTML = `ANDA TELAH SALAH MEMILIH, PILIHLAH H. ALWI JABARUDIN UNTUK KEMAJUAN DESA SUMURGEDE`;
-        }
-      } else {
-        msgBox.className = "empty-msg warning-msg";
-        textContainer.innerHTML = `ANDA SALAH, MEMILIH LEBIH DARI SATU CALON MAKA SUARA ANDA DIANGGAP TIDAK SAH, PILIHLAH H. ALWI JABARUDIN UNTUK KEMAJUAN DESA SUMURGEDE`;
-      }
-
+      // Tutup layar konfirmasi
       document.getElementById("screen-confirm").classList.remove("active");
-      document.getElementById("screen-thanks").classList.add("active");
+
+      // Tampilkan toast "Menyimpan suara..." selama 2 detik
+      const toastOverlay = document.getElementById("custom-toast-overlay");
+      const toastText = document.getElementById("toast-text");
+      toastText.innerText = "Menyimpan suara...";
+      toastOverlay.style.display = "flex";
+
+      setTimeout(() => {
+        // Ubah teks menjadi "Terima Kasih, Suara berhasil disimpan" selama 2 detik berikutnya
+        toastText.innerText = "Terima Kasih, Suara berhasil disimpan";
+
+        setTimeout(() => {
+          // Sembunyikan toast dan kembalikan ke layar scan
+          toastOverlay.style.display = "none";
+          resetToScan();
+        }, 2000);
+
+      }, 2000);
     }
 
     function resetToScan() {
@@ -788,8 +781,8 @@
       document.querySelectorAll('.candidate-card').forEach(c => c.classList.remove('selected'));
       document.getElementById("hand-pointer").style.display = "none";
       
-      document.getElementById("screen-thanks").classList.remove("active");
       document.getElementById("main-header").style.display = "none";
+      document.getElementById("screen-vote").classList.remove("active");
       document.getElementById("screen-scan").classList.remove("hidden");
       
       startCamera();
