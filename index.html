@@ -398,7 +398,7 @@
     .btn-blue { background-color: #0052cc; }
     .btn-danger { background-color: #d93025; }
 
-    /* CUSTOM TOAST / ALERT POPUP POSISI AGAK KE ATAS (MENYIMPAN & BERHASIL DISIMPAN) */
+    /* CUSTOM TOAST / ALERT POPUP POSISI AGAK KE ATAS DENGAN BACKGROUND TRANSPARAN */
     #custom-toast-overlay {
       display: none;
       position: fixed;
@@ -406,26 +406,67 @@
       left: 0;
       width: 100vw;
       height: 100vh;
-      background-color: rgba(0, 0, 0, 0.5);
+      background-color: rgba(0, 0, 0, 0.45);
       z-index: 3000;
       align-items: flex-start;
       justify-content: center;
-      padding-top: 15vh;
+      padding-top: 14vh;
     }
 
     .toast-box {
-      background: white;
-      padding: 18px 30px;
-      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.96);
+      padding: 18px 34px;
+      border-radius: 12px;
       font-size: 16px;
       font-weight: 800;
       color: #333;
-      box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+      box-shadow: 0 6px 24px rgba(0,0,0,0.3);
       text-align: center;
-      border: 2px solid #0052cc;
+      border: 2px solid #e0e0e0;
+      min-width: 260px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
     }
 
-    /* LAYAR SELESAI (JIKA DIPERLUKAN CADANGAN) */
+    /* Ikon Ceklis Hijau */
+    .success-check-circle {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background-color: #25d366;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 10px;
+      box-shadow: 0 3px 8px rgba(37, 211, 102, 0.4);
+    }
+
+    .success-check-circle svg {
+      width: 28px;
+      height: 28px;
+      stroke: #ffffff;
+      stroke-width: 3.5;
+      fill: none;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .toast-title {
+      font-size: 17px;
+      font-weight: 900;
+      color: #1a2a3a;
+      margin-bottom: 3px;
+    }
+
+    .toast-subtitle {
+      font-size: 13px;
+      font-weight: 600;
+      color: #555555;
+    }
+
+    /* LAYAR SELESAI (CADANGAN) */
     .empty-msg {
       width: 100%;
       display: flex;
@@ -515,7 +556,7 @@
 
   <!-- POPUP LOADING / STATUS (MENYIMPAN & BERHASIL DISIMPAN) -->
   <div id="custom-toast-overlay">
-    <div id="toast-text" class="toast-box">Menyimpan suara...</div>
+    <div id="toast-content" class="toast-box">Menyimpan suara...</div>
   </div>
 
   <script>
@@ -753,18 +794,31 @@
         usedQrCodes.add(currentActiveUser);
       }
 
-      // Tutup layar konfirmasi
+      // Tutup layar konfirmasi & munculkan kembali layar pilihan (termasuk kandidat yang dipilih) sebagai background
       document.getElementById("screen-confirm").classList.remove("active");
+      document.getElementById("main-header").style.display = "block";
+      document.getElementById("screen-vote").classList.add("active");
+      if (selectedCandidates.size > 0) {
+        document.getElementById("hand-pointer").style.display = "block";
+      }
 
       // Tampilkan toast "Menyimpan suara..." selama 2 detik
       const toastOverlay = document.getElementById("custom-toast-overlay");
-      const toastText = document.getElementById("toast-text");
-      toastText.innerText = "Menyimpan suara...";
+      const toastContent = document.getElementById("toast-content");
+      toastContent.innerHTML = `Menyimpan suara...`;
       toastOverlay.style.display = "flex";
 
       setTimeout(() => {
-        // Ubah teks menjadi "Terima Kasih, Suara berhasil disimpan" selama 2 detik berikutnya
-        toastText.innerText = "Terima Kasih, Suara berhasil disimpan";
+        // Ubah tampilan kotak menjadi logo ceklis hijau + "Terima Kasih" + "Suara berhasil disimpan" selama 2 detik
+        toastContent.innerHTML = `
+          <div class="success-check-circle">
+            <svg viewBox="0 0 24 24">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+          </div>
+          <div class="toast-title">Terima Kasih</div>
+          <div class="toast-subtitle">Suara berhasil disimpan</div>
+        `;
 
         setTimeout(() => {
           // Sembunyikan toast dan kembalikan ke layar scan
