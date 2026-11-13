@@ -291,7 +291,7 @@
       100% { transform: translateX(-50%) rotate(180deg) translateY(10px); }
     }
 
-    /* LAYAR KONFIRMASI DENGAN BACKGROUND GELAP & MODAL PUTIH */
+    /* LAYAR KONFIRMASI (PAS DI LAYAR HP & TABLET TANPA SCROLL) */
     #screen-confirm {
       display: none;
       position: fixed;
@@ -304,7 +304,8 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      padding: 16px;
+      padding: 6px;
+      overflow: hidden;
     }
 
     #screen-confirm.active { 
@@ -313,10 +314,10 @@
 
     .confirm-modal-box {
       width: 100%;
-      max-width: 650px;
+      max-width: 520px;
       background: #ffffff;
-      border-radius: 12px;
-      padding: 20px;
+      border-radius: 10px;
+      padding: 12px;
       box-shadow: 0 8px 24px rgba(0,0,0,0.3);
       display: flex;
       flex-direction: column;
@@ -326,19 +327,19 @@
     .confirm-header-text {
       width: 100%;
       text-align: left;
-      margin-bottom: 15px;
+      margin-bottom: 6px;
     }
 
     .confirm-header-text h3 {
-      font-size: 16px;
+      font-size: 14px;
       font-weight: 900;
       color: #1a2a3a;
       text-transform: uppercase;
-      margin-bottom: 3px;
+      margin-bottom: 1px;
     }
 
     .confirm-header-text p {
-      font-size: 12px;
+      font-size: 11px;
       font-weight: 600;
       color: #555;
     }
@@ -349,18 +350,18 @@
       flex-direction: row;
       justify-content: center;
       align-items: center;
-      gap: 15px;
+      gap: 12px;
       background: #fafafa;
       border: 1px solid #e0e0e0;
-      border-radius: 8px;
-      padding: 15px;
-      margin-bottom: 20px;
+      border-radius: 6px;
+      padding: 8px;
+      margin-bottom: 10px;
     }
 
     #confirm-container .candidate-card {
       border: 2px solid #0052cc !important;
-      flex: 0 1 150px;
-      max-width: 45%;
+      flex: 0 1 110px;
+      max-width: 35%;
       height: auto;
       padding: 2px;
       background: white;
@@ -373,16 +374,16 @@
     .action-bar {
       width: 100%;
       display: flex;
-      gap: 15px;
+      gap: 10px;
       justify-content: center;
     }
 
     .btn {
       flex: 1;
-      height: 46px;
+      height: 38px;
       border: none;
       border-radius: 6px;
-      font-size: 15px;
+      font-size: 13px;
       font-weight: 900;
       color: #ffffff;
       cursor: pointer;
@@ -488,7 +489,7 @@
     </div>
   </div>
 
-  <!-- LAYAR KONFIRMASI (BACKGROUND HITAM + KOTAK MODAL PUTIH) -->
+  <!-- LAYAR KONFIRMASI -->
   <div id="screen-confirm">
     <div class="confirm-modal-box">
       <div class="confirm-header-text">
